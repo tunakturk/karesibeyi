@@ -1,0 +1,16 @@
+{
+  "name": "karesibeyi-api",
+  "main": "worker.js",
+  "compatibility_date": "2026-08-15",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "karesibeyi-orders",
+      "database_id": "c6942670-1a2c-4d84-a728-e922a2ee42df"
+    }
+  ],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  }
+}

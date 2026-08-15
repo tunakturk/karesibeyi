@@ -1,0 +1,18 @@
+Karesi Beyi - güncel sürüm
+
+Bu paket:
+- Admin paneli
+- D1 ürün yönetimi
+- D1 sipariş yönetimi
+- Sepete ekleme / adet değiştirme
+- Sipariş oluşturma
+- Ödeme için payment_url alanı (henüz bağlı değil)
+
+ÖNEMLİ:
+1) wrangler.json içindeki BURAYA_CLOUDFLARE_D1_DATABASE_ID kısmını gerçek D1 Database ID ile değiştir.
+2) Cloudflare Worker Secret olarak ADMIN_PASSWORD oluştur.
+3) schema.sql dosyasını D1 veritabanına uygula.
+4) public/assets klasörünü mevcut GitHub projenizdeki assets klasörüyle koru. Bu paket mevcut görselleri içermez.
+5) Sonra GitHub'a worker.js, wrangler.json, schema.sql ve public klasöründeki 6 dosyayı yükle.
+
+Ödeme henüz bağlı değildir. Sipariş oluşturulduğunda D1'e kaydedilir ve admin panelinde görünür.

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Karesi Beyi ürünleri. Kuruyemiş, unlu mamuller, kahve, helva, kolonya ve daha fazlası.">
+<title>Karesi Beyi | Sofranızda Güven, Markamızda Kalite</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href="#top"><img src="assets/logo.png" alt="Karesi Beyi"></a>
+    <nav class="nav">
+      <a href="#urunler">Ürünler</a>
+      <a href="#hakkimizda">Hakkımızda</a>
+      <a href="#iletisim">İletişim</a>
+      <button class="cart-btn" id="openCart">Sepet <span id="cartCount">0</span></button>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menü">☰</button>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Karesi Beyi</span>
+      <h1>Sofranızda güven,<br><strong>markamızda kalite.</strong></h1>
+      <p>Kuruyemişten unlu mamullere, kahveden kolonyaya uzanan Karesi Beyi ürünlerini keşfedin.</p>
+      <a class="btn primary" href="#urunler">Ürünleri Keşfet</a>
+    </div>
+    <img class="hero-img" src="assets/turk-kahvesi.jpeg" alt="Karesi Beyi Türk Kahvesi">
+  </div>
+</section>
+
+<section class="section" id="urunler">
+  <div class="container">
+    <div class="heading">
+      <div><span class="kicker">Karesi Beyi</span><h2>Ürünlerimiz</h2></div>
+      <p>Ürün, fiyat ve stok bilgileri yönetim panelinden güncellenir.</p>
+    </div>
+    <div id="productGrid" class="product-grid"></div>
+  </div>
+</section>
+
+<section class="section muted" id="hakkimizda">
+  <div class="container two-col">
+    <div><span class="kicker">Hakkımızda</span><h2>Gelenekten ilham, güvenle üretim.</h2></div>
+    <div><p>Karesi Beyi; kuruyemiş, unlu mamuller, kahve, tatlı ve kolonya gibi farklı ürün gruplarını aynı çatı altında buluşturur.</p><p class="quote">“Sofranızda Güven, Markamızda Kalite.”</p></div>
+  </div>
+</section>
+
+<section class="section" id="iletisim">
+  <div class="container contact">
+    <span class="kicker">İletişim</span>
+    <h2>Sipariş ve bilgi için bize ulaşın.</h2>
+    <p>Sepetinizi oluşturup bilgilerinizi girerek sipariş kaydı oluşturabilirsiniz. Kart ödemesi ödeme kuruluşu bağlandığında aktif olacaktır.</p>
+  </div>
+</section>
+</main>
+
+<div class="drawer" id="cartDrawer" aria-hidden="true">
+  <div class="drawer-panel">
+    <div class="drawer-head"><h2>Sepetim</h2><button id="closeCart">×</button></div>
+    <div id="cartItems"></div>
+    <div class="cart-total"><span>Toplam</span><strong id="cartTotal">₺0,00</strong></div>
+    <button class="btn primary full" id="checkoutBtn">Siparişi Oluştur</button>
+    <p class="small">Kart ödemesi henüz bağlı değil. Bu aşamada sipariş kaydı oluşturulur.</p>
+  </div>
+</div>
+
+<div class="modal" id="checkoutModal">
+  <div class="modal-box">
+    <button class="close" id="closeCheckout">×</button>
+    <span class="kicker">Sipariş</span><h2>Bilgilerinizi girin</h2>
+    <form id="checkoutForm">
+      <input required name="name" placeholder="Ad Soyad">
+      <input required name="phone" placeholder="Telefon">
+      <input required type="email" name="email" placeholder="E-posta">
+      <input required name="city" placeholder="İl">
+      <input required name="district" placeholder="İlçe">
+      <textarea required name="address" placeholder="Açık adres"></textarea>
+      <textarea name="note" placeholder="Sipariş notu (opsiyonel)"></textarea>
+      <button class="btn primary full" type="submit">Siparişi Gönder</button>
+    </form>
+    <div id="checkoutMessage"></div>
+  </div>
+</div>
+
+<footer><div class="container">© <span id="year"></span> Karesi Beyi</div></footer>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Karesi Beyi — Yönetim Paneli</title>
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div id="loginView" class="auth-shell">
+  <div class="auth-card">
+    <img class="login-logo" src="/assets/logo.png" alt="Karesi Beyi">
+    <h1>Karesi Beyi</h1>
+    <p>Yönetim paneli</p>
+    <form id="loginForm">
+      <label>Yönetici şifresi
+        <input id="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit">Giriş yap</button>
+      <div id="loginError" class="error"></div>
+    </form>
+  </div>
+</div>
+
+<div id="appView" class="app hidden">
+  <aside class="sidebar">
+    <div class="side-brand">
+      <img src="/assets/logo.png" alt="Karesi Beyi">
+      <div>Karesi Beyi<small>Yönetim</small></div>
+    </div>
+    <nav>
+      <button class="nav-item active" data-section="dashboard">Genel Bakış</button>
+      <button class="nav-item" data-section="products">Ürünler</button>
+      <button class="nav-item" data-section="orders">Siparişler</button>
+      <button class="nav-item" data-section="settings">Ayarlar</button>
+    </nav>
+    <button id="logoutBtn" class="logout">Çıkış yap</button>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <div><div class="eyebrow">KARESİ BEYİ</div><h2 id="pageTitle">Genel Bakış</h2></div>
+      <div id="status" class="status">Bağlanıyor…</div>
+    </header>
+
+    <section id="dashboard" class="section active">
+      <div class="cards">
+        <div class="card"><span>Toplam ürün</span><strong id="statProducts">0</strong></div>
+        <div class="card"><span>Yeni sipariş</span><strong id="statOrders">0</strong></div>
+        <div class="card"><span>Toplam sipariş</span><strong id="statAllOrders">0</strong></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Son siparişler</h3><button class="ghost" data-go="orders">Tümünü gör</button></div>
+        <div id="recentOrders" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <section id="products" class="section">
+      <div class="panel">
+        <div class="panel-head"><h3>Ürünler</h3><button id="newProductBtn">+ Yeni ürün</button></div>
+        <div id="productsTable" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <section id="orders" class="section">
+      <div class="panel">
+        <div class="panel-head"><h3>Siparişler</h3><button class="ghost" id="refreshOrdersBtn">Yenile</button></div>
+        <div id="ordersTable" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <section id="settings" class="section">
+      <div class="panel narrow">
+        <h3>Mağaza ayarları</h3>
+        <form id="settingsForm" class="form-grid">
+          <label>Mağaza adı<input name="store_name" value="Karesi Beyi"></label>
+          <label>Telefon<input name="phone" placeholder="+90 ..."></label>
+          <label>E-posta<input name="email" type="email" placeholder="info@karesibeyi.com"></label>
+          <label>WhatsApp<input name="whatsapp" placeholder="905..."></label>
+          <button type="submit">Kaydet</button>
+        </form>
+        <p class="hint">Ödeme anahtarları bu panelde tutulmaz. PayTR/iyzico bilgileri Cloudflare Secret olarak saklanmalıdır.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="productDialog">
+  <form id="productForm" method="dialog" class="modal">
+    <div class="modal-head"><h3 id="productDialogTitle">Yeni ürün</h3><button type="button" class="close" id="closeProduct">×</button></div>
+    <input type="hidden" name="id">
+    <label>Ürün adı<input name="name" required></label>
+    <label>Kategori yerine kullanılacak açıklama<input name="description" placeholder="Örn. Kuruyemiş"></label>
+    <div class="two">
+      <label>Fiyat (TL)<input name="price" type="number" step="0.01" min="0" required></label>
+      <label>Stok<input name="stock" type="number" step="1" min="0" value="0" required></label>
+    </div>
+    <label>Görsel yolu/URL<input name="image_url" placeholder="assets/urun.jpg"></label>
+    <label>Ürün açıklaması<textarea name="details" rows="4"></textarea></label>
+    <label class="check"><input name="active" type="checkbox" checked> Satışta</label>
+    <div class="modal-actions"><button type="button" class="ghost" id="cancelProduct">Vazgeç</button><button type="submit">Kaydet</button></div>
+  </form>
+</dialog>
+
+<script src="/admin.js"></script>
+</body>
+</html>
