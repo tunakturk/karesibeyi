@@ -1,4 +1,4 @@
-const API_BASE = "https://karesibeyi-api.tunahanakturk432.workers.dev";
+const API_BASE = "";
 let products = [];
 let cart = JSON.parse(localStorage.getItem("kb_cart") || "[]");
 
