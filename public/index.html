@@ -11,14 +11,18 @@
 <body>
 <header class="site-header">
   <div class="container nav-wrap">
-    <a class="brand" href="#top"><img src="assets/logo.png" alt="Karesi Beyi"></a>
-    <nav class="nav">
-      <a href="#urunler">Ürünler</a>
+    <a class="brand" href="#top" aria-label="Karesi Beyi ana sayfa">
+      <span class="brand-mark"><img src="assets/logo.png" alt="Karesi Beyi"></span>
+    </a>
+    <nav class="nav" id="siteNav">
+      <a href="#top">Karesi Beyi</a>
+      <a href="/products.html">Ürünler</a>
+      <a href="/products.html">Katalog</a>
       <a href="#hakkimizda">Hakkımızda</a>
       <a href="#iletisim">İletişim</a>
       <button class="cart-btn" id="openCart">Sepet <span id="cartCount">0</span></button>
     </nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Menü">☰</button>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menüyü aç" aria-expanded="false">☰</button>
   </div>
 </header>
 
@@ -37,8 +41,11 @@
 
 <section class="section" id="urunler">
   <div class="container">
-    <div class="heading">
-      <div><span class="kicker">Karesi Beyi</span><h2>Ürünlerimiz</h2></div>
+    <div class="heading products-heading">
+      <div>
+        <span class="kicker">Karesi Beyi</span>
+        <h2>Ürünlerimiz</h2>
+      </div>
       <p>Ürün, fiyat ve stok bilgileri yönetim panelinden güncellenir.</p>
     </div>
     <div id="productGrid" class="product-grid"></div>
@@ -57,6 +64,34 @@
     <span class="kicker">İletişim</span>
     <h2>Sipariş ve bilgi için bize ulaşın.</h2>
     <p>Sepetinizi oluşturup bilgilerinizi girerek sipariş kaydı oluşturabilirsiniz. Kart ödemesi ödeme kuruluşu bağlandığında aktif olacaktır.</p>
+    <div class="contact-details">
+      <a class="contact-item" href="mailto:bilgi.akgida@gmail.com">
+        <span class="contact-icon" aria-hidden="true">✉</span>
+        <span><small>E-posta</small><strong>bilgi.akgida@gmail.com</strong></span>
+      </a>
+      <a class="contact-item" href="mailto:bilgi@karesibeyi.com">
+        <span class="contact-icon" aria-hidden="true">✉</span>
+        <span><small>Kurumsal e-posta</small><strong>bilgi@karesibeyi.com</strong></span>
+      </a>
+      <a class="contact-item" href="tel:+905402802110">
+        <span class="contact-icon" aria-hidden="true">☎</span>
+        <span><small>Telefon</small><strong>+90 540 280 21 10</strong></span>
+      </a>
+      <a class="contact-item" href="https://wa.me/905402802110" target="_blank" rel="noopener noreferrer">
+        <span class="contact-icon whatsapp-icon" aria-hidden="true">◉</span>
+        <span><small>WhatsApp</small><strong>Mesaj gönder</strong></span>
+      </a>
+    </div>
+    <div class="map-frame">
+      <iframe
+        title="Ak Gıda Satış ve Pazarlama konumu"
+        src="https://www.google.com/maps?q=39.672668,27.88348&z=15&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <a class="map-link" href="https://maps.app.goo.gl/a7nsjvpkQYQzvf5y8" target="_blank" rel="noopener noreferrer">
+        <span>📍 Google Haritalar'da aç</span><span aria-hidden="true">↗</span>
+      </a>
+    </div>
   </div>
 </section>
 </main>

@@ -52,6 +52,9 @@ export default {
       if (url.pathname === "/admin" || url.pathname === "/admin/")
         return env.ASSETS.fetch(new Request(new URL("/admin.html", request.url), request));
 
+      if (url.pathname === "/urunler" || url.pathname === "/urunler/")
+        return env.ASSETS.fetch(new Request(new URL("/products.html", request.url), request));
+
       return env.ASSETS.fetch(request);
     } catch (error) {
       console.error(error);

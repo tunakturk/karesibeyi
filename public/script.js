@@ -1,6 +1,12 @@
 const API_BASE = "";
 let products = [];
 let cart = JSON.parse(localStorage.getItem("kb_cart") || "[]");
+const productCategories = [
+  { id: "kahve-tatli", title: "Kahve & Tatlı", products: ["kahve", "beze", "kurabiye", "draje"] },
+  { id: "gurme", title: "Gurme Lezzetler", products: ["midye", "tahin", "eriste", "karisik"] },
+  { id: "atistirmalik", title: "Atıştırmalık", products: ["beze", "kurabiye", "draje", "karisik"] },
+  { id: "kolonya", title: "Kolonya", products: ["kolonya"] }
+];
 
 const $ = (s) => document.querySelector(s);
 const money = (n) => new Intl.NumberFormat("tr-TR", {
@@ -9,6 +15,10 @@ const money = (n) => new Intl.NumberFormat("tr-TR", {
 }).format(Number(n || 0));
 
 const saveCart = () => localStorage.setItem("kb_cart", JSON.stringify(cart));
+
+function updateHeaderOnScroll() {
+  $(".site-header").classList.toggle("scrolled", window.scrollY > 24);
+}
 
 async function loadProducts() {
   const res = await fetch(`${API_BASE}/api/products`);
@@ -28,13 +38,31 @@ async function loadProducts() {
 
 function renderProducts() {
   const el = $("#productGrid");
-
   if (!products.length) {
     el.innerHTML = `<div class="empty">Henüz satışa açık ürün bulunmuyor.</div>`;
     return;
   }
 
-  el.innerHTML = products.map(p => {
+  el.innerHTML = productCategories.map((category) => {
+    const categoryProducts = shuffle(products.filter((product) => category.products.includes(product.id)));
+    if (!categoryProducts.length) return "";
+    const cards = categoryProducts.map(productCard).join("");
+    const isScrollable = categoryProducts.length > 1;
+    return `
+      <section class="product-rail" aria-labelledby="category-${category.id}">
+        <div class="rail-heading">
+          <h3 id="category-${category.id}">${category.title}</h3>
+          <span>Özenle seçildi</span>
+        </div>
+        <div class="rail-window ${isScrollable ? "" : "single-product"}">
+          <div class="rail-track">${isScrollable ? cards + cards : cards}</div>
+        </div>
+      </section>
+    `;
+  }).join("");
+}
+
+function productCard(p) {
     const canBuy = Number(p.price) > 0 && Number(p.stock) > 0;
 
     return `
@@ -53,7 +81,15 @@ function renderProducts() {
         </div>
       </article>
     `;
-  }).join("");
+}
+
+function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
 }
 
 function addToCart(id) {
@@ -141,6 +177,21 @@ function escapeHtml(value) {
 
 $("#openCart").onclick = openCart;
 $("#closeCart").onclick = closeCart;
+window.addEventListener("scroll", updateHeaderOnScroll, { passive: true });
+updateHeaderOnScroll();
+$("#menuToggle").onclick = () => {
+  const nav = $("#siteNav");
+  const isOpen = nav.classList.toggle("open");
+  $("#menuToggle").setAttribute("aria-expanded", String(isOpen));
+  $("#menuToggle").setAttribute("aria-label", isOpen ? "Menüyü kapat" : "Menüyü aç");
+};
+document.querySelectorAll("#siteNav a").forEach((link) => {
+  link.onclick = () => {
+    $("#siteNav").classList.remove("open");
+    $("#menuToggle").setAttribute("aria-expanded", "false");
+    $("#menuToggle").setAttribute("aria-label", "Menüyü aç");
+  };
+});
 
 $("#checkoutBtn").onclick = () => {
   closeCart();
