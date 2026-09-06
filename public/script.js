@@ -2,10 +2,10 @@ const API_BASE = "";
 let products = [];
 let cart = JSON.parse(localStorage.getItem("kb_cart") || "[]");
 const productCategories = [
-  { id: "kahve-tatli", title: "Kahve & Tatlı", products: ["kahve", "beze", "kurabiye", "draje"] },
-  { id: "gurme", title: "Gurme Lezzetler", products: ["midye", "tahin", "eriste", "karisik"] },
-  { id: "atistirmalik", title: "Atıştırmalık", products: ["beze", "kurabiye", "draje", "karisik"] },
-  { id: "kolonya", title: "Kolonya", products: ["kolonya"] }
+  { id: "kahve-tatli", title: "Kahve & Tatlı", products: ["kahve", "turk-kahvesi", "beze", "kurabiye", "draje"] },
+  { id: "gurme", title: "Gurme Lezzetler", products: ["midye", "sebzeli-mini-midye-makarna", "tahin", "tahin-uzum-pekmezi", "eriste", "sebzeli-eriste", "karisik", "ozel-karisik", "ozel-karisik-kuruyemis"] },
+  { id: "atistirmalik", title: "Atıştırmalık", products: ["beze", "kurabiye", "draje", "karisik", "ozel-karisik", "ozel-karisik-kuruyemis"] },
+  { id: "kolonya", title: "Kolonya", products: ["kolonya", "zeytin-cicegi-kolonyasi"] }
 ];
 
 const $ = (s) => document.querySelector(s);
@@ -44,7 +44,9 @@ function renderProducts() {
   }
 
   el.innerHTML = productCategories.map((category) => {
-    const categoryProducts = shuffle(products.filter((product) => category.products.includes(product.id)));
+    const categoryProducts = shuffle(products.filter((product) =>
+      category.products.includes(product.id) || category.products.includes(product.slug)
+    ));
     if (!categoryProducts.length) return "";
     const cards = categoryProducts.map(productCard).join("");
     const isScrollable = categoryProducts.length > 1;
