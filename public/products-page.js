@@ -4,16 +4,20 @@ let selectedCategory = "all";
 let cart = JSON.parse(localStorage.getItem("kb_cart") || "[]");
 const categories = [
   ["all", "Tümü"],
-  ["kahve-tatli", "Kahve & Tatlı"],
-  ["gurme", "Gurme Lezzetler"],
-  ["atistirmalik", "Atıştırmalık"],
-  ["kolonya", "Kolonya"]
+  ["unlu-mamuller", "Unlu Mamüller"],
+  ["kuruyemisler", "Kuruyemişler"],
+  ["kurabiyeler", "Kurabiyeler"],
+  ["helvalar", "Helvalar"],
+  ["drajeler", "Drajeler"],
+  ["kolonyalar", "Kolonyalar"]
 ];
 const categoryProducts = {
-  "kahve-tatli": ["kahve", "beze", "kurabiye", "draje"],
-  gurme: ["midye", "tahin", "eriste", "karisik"],
-  atistirmalik: ["beze", "kurabiye", "draje", "karisik"],
-  kolonya: ["kolonya"]
+  "unlu-mamuller": ["midye", "sebzeli-mini-midye-makarna", "eriste", "sebzeli-eriste"],
+  kuruyemisler: ["karisik", "ozel-karisik", "ozel-karisik-kuruyemis"],
+  kurabiyeler: ["beze", "sade-beze", "kurabiye", "tatli-kurabiye"],
+  helvalar: ["tahin", "tahin-uzum-pekmezi"],
+  drajeler: ["draje", "draje-cesitleri"],
+  kolonyalar: ["kolonya", "zeytin-cicegi-kolonyasi"]
 };
 const $ = (selector) => document.querySelector(selector);
 const money = (value) => new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(Number(value || 0));
@@ -36,7 +40,8 @@ function renderProducts() {
   const query = $("#productSearch").value.trim().toLocaleLowerCase("tr-TR");
   const ids = selectedCategory === "all" ? null : categoryProducts[selectedCategory];
   const visible = products.filter((product) => {
-    const matchesCategory = !ids || ids.includes(product.id);
+    const matchesCategory = !ids || product.category === selectedCategory ||
+      (!product.category && (ids.includes(product.id) || ids.includes(product.slug)));
     return matchesCategory && product.name.toLocaleLowerCase("tr-TR").includes(query);
   });
   $("#catalogGrid").innerHTML = visible.length ? visible.map(productCard).join("") : `<div class="catalog-empty">Aramanızla eşleşen ürün bulunamadı.</div>`;

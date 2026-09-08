@@ -73,11 +73,12 @@ function render() {
 function renderProducts() {
   $("#productsTable").innerHTML = `
     <table class="table">
-      <thead><tr><th>Ürün</th><th>Fiyat</th><th>Stok</th><th>Durum</th><th></th></tr></thead>
+      <thead><tr><th>Ürün</th><th>Kategori</th><th>Fiyat</th><th>Stok</th><th>Durum</th><th></th></tr></thead>
       <tbody>
         ${products.map(p => `
           <tr>
             <td>${esc(p.name)}</td>
+            <td>${categoryLabel(p.category)}</td>
             <td>${money(p.price)}</td>
             <td>${p.stock}</td>
             <td><span class="pill">${Number(p.active) ? "Aktif" : "Pasif"}</span></td>
@@ -88,7 +89,7 @@ function renderProducts() {
               </div>
             </td>
           </tr>
-        `).join("") || `<tr><td colspan="5">Henüz ürün yok.</td></tr>`}
+        `).join("") || `<tr><td colspan="6">Henüz ürün yok.</td></tr>`}
       </tbody>
     </table>`;
 }
@@ -136,6 +137,17 @@ function money(v) {
   return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(Number(v || 0));
 }
 
+function categoryLabel(value) {
+  return ({
+    "unlu-mamuller": "Unlu Mamüller",
+    kuruyemisler: "Kuruyemişler",
+    kurabiyeler: "Kurabiyeler",
+    helvalar: "Helvalar",
+    drajeler: "Drajeler",
+    kolonyalar: "Kolonyalar"
+  }[value] || "Unlu Mamüller");
+}
+
 function date(v) {
   return v ? new Date(v).toLocaleString("tr-TR") : "-";
 }
@@ -151,6 +163,7 @@ function openProduct(product = {}) {
   form.reset();
   form.id.value = product.id || "";
   form.name.value = product.name || "";
+  form.category.value = product.category || "unlu-mamuller";
   form.description.value = product.description || "";
   form.price.value = product.price ?? "";
   form.stock.value = product.stock ?? 0;
@@ -244,6 +257,7 @@ $("#productForm").addEventListener("submit", async e => {
 
   const body = {
     name: form.name.value.trim(),
+    category: form.category.value,
     description: form.details.value.trim(),
     price: Number(form.price.value),
     stock: Number(form.stock.value),

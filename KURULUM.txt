@@ -16,3 +16,9 @@ Bu paket:
 5) Sonra GitHub'a worker.js, wrangler.json, schema.sql ve public klasöründeki 6 dosyayı yükle.
 
 Ödeme henüz bağlı değildir. Sipariş oluşturulduğunda D1'e kaydedilir ve admin panelinde görünür.
+
+KATEGORİ GÜNCELLEMESİ:
+Mevcut D1 veritabanına kategori alanını eklemek için proje kökünde şu komutu çalıştır:
+wrangler d1 execute karesibeyi-orders --remote --file=migrations/001_add_product_category.sql
+wrangler d1 execute karesibeyi-orders --remote --file=migrations/002_rename_product_categories.sql
+Bu işlemden sonra admin panelindeki ürün formunda kategori seçilebilir; seçim ana sayfaya ve katalog sayfasına uygulanır.

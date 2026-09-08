@@ -2,10 +2,12 @@ const API_BASE = "";
 let products = [];
 let cart = JSON.parse(localStorage.getItem("kb_cart") || "[]");
 const productCategories = [
-  { id: "kahve-tatli", title: "Kahve & Tatlı", products: ["kahve", "turk-kahvesi", "beze", "kurabiye", "draje"] },
-  { id: "gurme", title: "Gurme Lezzetler", products: ["midye", "sebzeli-mini-midye-makarna", "tahin", "tahin-uzum-pekmezi", "eriste", "sebzeli-eriste", "karisik", "ozel-karisik", "ozel-karisik-kuruyemis"] },
-  { id: "atistirmalik", title: "Atıştırmalık", products: ["beze", "kurabiye", "draje", "karisik", "ozel-karisik", "ozel-karisik-kuruyemis"] },
-  { id: "kolonya", title: "Kolonya", products: ["kolonya", "zeytin-cicegi-kolonyasi"] }
+  { id: "unlu-mamuller", title: "Unlu Mamüller", products: ["midye", "sebzeli-mini-midye-makarna", "eriste", "sebzeli-eriste"] },
+  { id: "kuruyemisler", title: "Kuruyemişler", products: ["karisik", "ozel-karisik", "ozel-karisik-kuruyemis"] },
+  { id: "kurabiyeler", title: "Kurabiyeler", products: ["beze", "sade-beze", "kurabiye", "tatli-kurabiye"] },
+  { id: "helvalar", title: "Helvalar", products: ["tahin", "tahin-uzum-pekmezi"] },
+  { id: "drajeler", title: "Drajeler", products: ["draje", "draje-cesitleri"] },
+  { id: "kolonyalar", title: "Kolonyalar", products: ["kolonya", "zeytin-cicegi-kolonyasi"] }
 ];
 
 const $ = (s) => document.querySelector(s);
@@ -45,7 +47,8 @@ function renderProducts() {
 
   el.innerHTML = productCategories.map((category) => {
     const categoryProducts = shuffle(products.filter((product) =>
-      category.products.includes(product.id) || category.products.includes(product.slug)
+      product.category === category.id ||
+      (!product.category && (category.products.includes(product.id) || category.products.includes(product.slug)))
     ));
     if (!categoryProducts.length) return "";
     const cards = categoryProducts.map(productCard).join("");

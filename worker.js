@@ -65,7 +65,7 @@ export default {
 
 async function publicProducts(env) {
   const rows = await env.DB.prepare(`
-    SELECT id, name, slug, description, price, stock, image_url, active
+    SELECT id, name, slug, description, price, stock, image_url, category, active
     FROM products
     WHERE active = 1
     ORDER BY created_at DESC
@@ -219,7 +219,7 @@ async function adminProducts(request, env) {
   if (!await authenticated(request, env)) return json({ error: "Yetkisiz." }, 401);
 
   const rows = await env.DB.prepare(`
-    SELECT id, name, slug, description, price, stock, image_url, active,
+    SELECT id, name, slug, description, price, stock, image_url, category, active,
            created_at, updated_at
     FROM products
     ORDER BY created_at DESC
@@ -241,8 +241,8 @@ async function createProduct(request, env) {
 
   await env.DB.prepare(`
     INSERT INTO products
-    (id, name, slug, description, price, stock, image_url, active, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (id, name, slug, description, price, stock, image_url, category, active, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     name,
@@ -251,6 +251,7 @@ async function createProduct(request, env) {
     safeNumber(body.price),
     safeInt(body.stock),
     String(body.image_url || ""),
+    validCategory(body.category),
     body.active === false ? 0 : 1,
     now,
     now
@@ -275,7 +276,7 @@ async function updateProduct(request, env, id) {
   await env.DB.prepare(`
     UPDATE products
     SET name = ?, slug = ?, description = ?, price = ?, stock = ?,
-        image_url = ?, active = ?, updated_at = ?
+        image_url = ?, category = ?, active = ?, updated_at = ?
     WHERE id = ?
   `).bind(
     name,
@@ -284,6 +285,7 @@ async function updateProduct(request, env, id) {
     safeNumber(body.price),
     safeInt(body.stock),
     String(body.image_url || ""),
+    validCategory(body.category),
     body.active === false ? 0 : 1,
     now,
     id
@@ -409,6 +411,13 @@ function safeNumber(value) {
 function safeInt(value) {
   const n = Math.floor(Number(value));
   return Number.isFinite(n) && n >= 0 ? n : 0;
+}
+
+function validCategory(value) {
+  const category = String(value || "unlu-mamuller");
+  return ["unlu-mamuller", "kuruyemisler", "kurabiyeler", "helvalar", "drajeler", "kolonyalar"].includes(category)
+    ? category
+    : "unlu-mamuller";
 }
 
 function json(data, status = 200) {
