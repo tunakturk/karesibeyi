@@ -3,7 +3,15 @@ const $$ = (s) => [...document.querySelectorAll(s)];
 
 let products = [];
 let orders = [];
-let selectedProductCategory = "all";
+let selectedProductCategory = "unlu-mamuller";
+const productCategories = [
+  ["unlu-mamuller", "Unlu Mamüller"],
+  ["kuruyemisler", "Kuruyemişler"],
+  ["kurabiyeler", "Kurabiyeler"],
+  ["helvalar", "Helvalar"],
+  ["drajeler", "Drajeler"],
+  ["kolonyalar", "Kolonyalar"]
+];
 
 async function api(path, options = {}) {
   const response = await fetch(`/api/admin${path}`, {
@@ -72,9 +80,20 @@ function render() {
 }
 
 function renderProducts() {
-  const visibleProducts = selectedProductCategory === "all"
-    ? products
-    : products.filter(product => product.category === selectedProductCategory);
+  const visibleProducts = products.filter(product => product.category === selectedProductCategory);
+
+  $("#productCategoryTabs").innerHTML = productCategories.map(([value, label]) => `
+    <button class="category-tab ${value === selectedProductCategory ? "active" : ""}"
+      type="button" role="tab" aria-selected="${value === selectedProductCategory}" data-category="${value}">
+      ${label}
+    </button>
+  `).join("");
+  $$("#productCategoryTabs .category-tab").forEach(button => {
+    button.onclick = () => {
+      selectedProductCategory = button.dataset.category;
+      renderProducts();
+    };
+  });
 
   $("#productsTable").innerHTML = `
     <table class="table">
@@ -94,7 +113,7 @@ function renderProducts() {
               </div>
             </td>
           </tr>
-        `).join("") || `<tr><td colspan="6">${selectedProductCategory === "all" ? "Henüz ürün yok." : "Bu kategoride henüz ürün yok."}</td></tr>`}
+        `).join("") || `<tr><td colspan="6">Bu kategoride henüz ürün yok.</td></tr>`}
       </tbody>
     </table>`;
 }
@@ -168,7 +187,7 @@ function openProduct(product = {}) {
   form.reset();
   form.id.value = product.id || "";
   form.name.value = product.name || "";
-  form.category.value = product.category || "unlu-mamuller";
+  form.category.value = product.category || selectedProductCategory;
   form.description.value = product.description || "";
   form.price.value = product.price ?? "";
   form.stock.value = product.stock ?? 0;
@@ -253,11 +272,6 @@ $("#newProductBtn").onclick = () => openProduct();
 $("#refreshOrdersBtn").onclick = loadAll;
 $("#closeProduct").onclick = () => $("#productDialog").close();
 $("#cancelProduct").onclick = () => $("#productDialog").close();
-$("#productCategoryFilter").onchange = event => {
-  selectedProductCategory = event.target.value;
-  renderProducts();
-};
-
 $("#productForm").addEventListener("submit", async e => {
   e.preventDefault();
 
