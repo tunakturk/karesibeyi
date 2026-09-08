@@ -21,4 +21,5 @@ KATEGORİ GÜNCELLEMESİ:
 Mevcut D1 veritabanına kategori alanını eklemek için proje kökünde şu komutu çalıştır:
 wrangler d1 execute karesibeyi-orders --remote --file=migrations/001_add_product_category.sql
 wrangler d1 execute karesibeyi-orders --remote --file=migrations/002_rename_product_categories.sql
+wrangler d1 execute karesibeyi-orders --remote --file=migrations/003_move_product_image_paths.sql
 Bu işlemden sonra admin panelindeki ürün formunda kategori seçilebilir; seçim ana sayfaya ve katalog sayfasına uygulanır.

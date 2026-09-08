@@ -57,12 +57,12 @@ CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
 INSERT OR IGNORE INTO products
 (id,name,slug,description,price,stock,image_url,category,active,created_at,updated_at)
 VALUES
-('kahve','Türk Kahvesi','turk-kahvesi','Karesi Beyi Türk Kahvesi',0,0,'assets/turk-kahvesi.jpeg','kuruyemisler',1,datetime('now'),datetime('now')),
-('midye','Sebzeli Mini Midye Makarna','sebzeli-mini-midye-makarna','',0,0,'assets/mini-midye-makarna.jpeg','unlu-mamuller',1,datetime('now'),datetime('now')),
-('tahin','Tahin & Üzüm Pekmezi','tahin-uzum-pekmezi','',0,0,'assets/tahin-pekmez.jpeg','helvalar',1,datetime('now'),datetime('now')),
-('eriste','Sebzeli Erişte','sebzeli-eriste','',0,0,'assets/sebzeli-eriste.jpeg','unlu-mamuller',1,datetime('now'),datetime('now')),
-('kolonya','Zeytin Çiçeği Kolonyası','zeytin-cicegi-kolonyasi','',0,0,'assets/zeytin-cicegi-kolonyasi.jpeg','kolonyalar',1,datetime('now'),datetime('now')),
-('draje','Draje Çeşitleri','draje-cesitleri','',0,0,'assets/draje.jpeg','drajeler',1,datetime('now'),datetime('now')),
-('beze','Sade Beze','sade-beze','',0,0,'assets/sade-beze.jpeg','kurabiyeler',1,datetime('now'),datetime('now')),
-('kurabiye','Tatlı Kurabiye','tatli-kurabiye','',0,0,'assets/tatli-kurabiye.jpeg','kurabiyeler',1,datetime('now'),datetime('now')),
-('karisik','Özel Karışık','ozel-karisik','',0,0,'assets/ozel-karisik.jpeg','kuruyemisler',1,datetime('now'),datetime('now'));
+('kahve','Türk Kahvesi','turk-kahvesi','Karesi Beyi Türk Kahvesi',0,0,'assets/kuruyemisler/turk-kahvesi.jpeg','kuruyemisler',1,datetime('now'),datetime('now')),
+('midye','Sebzeli Mini Midye Makarna','sebzeli-mini-midye-makarna','',0,0,'assets/unlu-mamuller/mini-midye-makarna.jpeg','unlu-mamuller',1,datetime('now'),datetime('now')),
+('tahin','Tahin & Üzüm Pekmezi','tahin-uzum-pekmezi','',0,0,'assets/helvalar/tahin-pekmez.jpeg','helvalar',1,datetime('now'),datetime('now')),
+('eriste','Sebzeli Erişte','sebzeli-eriste','',0,0,'assets/unlu-mamuller/sebzeli-eriste.jpeg','unlu-mamuller',1,datetime('now'),datetime('now')),
+('kolonya','Zeytin Çiçeği Kolonyası','zeytin-cicegi-kolonyasi','',0,0,'assets/kolonyalar/zeytin-cicegi-kolonyasi.jpeg','kolonyalar',1,datetime('now'),datetime('now')),
+('draje','Draje Çeşitleri','draje-cesitleri','',0,0,'assets/drajeler/drajemix.jpeg','drajeler',1,datetime('now'),datetime('now')),
+('beze','Sade Beze','sade-beze','',0,0,'assets/kurabiyeler/sade-beze.jpeg','kurabiyeler',1,datetime('now'),datetime('now')),
+('kurabiye','Tatlı Kurabiye','tatli-kurabiye','',0,0,'assets/kurabiyeler/tatli-kurabiye.jpeg','kurabiyeler',1,datetime('now'),datetime('now')),
+('karisik','Özel Karışık','ozel-karisik','',0,0,'assets/kuruyemisler/ozel-karisik.jpeg','kuruyemisler',1,datetime('now'),datetime('now'));
