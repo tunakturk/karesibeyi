@@ -57,7 +57,7 @@ function renderProducts() {
           <span>Özenle seçildi</span>
         </div>
         <div class="rail-window ${isScrollable ? "" : "single-product"}">
-          <div class="rail-track">${isScrollable ? cards + cards : cards}</div>
+          <div class="rail-track">${cards}${isScrollable ? `<div class="rail-duplicate">${cards}</div>` : ""}</div>
         </div>
       </section>
     `;
