@@ -50,7 +50,6 @@ function renderProducts() {
       product.category === category.id ||
       (!product.category && (category.products.includes(product.id) || category.products.includes(product.slug)))
     ));
-    if (!categoryProducts.length) return "";
     const cards = categoryProducts.map(productCard).join("");
     const isScrollable = categoryProducts.length > 1;
     return `
@@ -60,7 +59,9 @@ function renderProducts() {
           <span>Özenle seçildi</span>
         </div>
         <div class="rail-window ${isScrollable ? "" : "single-product"}">
-          <div class="rail-track">${cards}${isScrollable ? `<div class="rail-duplicate">${cards}</div>` : ""}</div>
+          ${cards
+            ? `<div class="rail-track">${cards}${isScrollable ? `<div class="rail-duplicate">${cards}</div>` : ""}</div>`
+            : `<div class="category-empty">Bu kategoride henüz ürün bulunmuyor.</div>`}
         </div>
       </section>
     `;
