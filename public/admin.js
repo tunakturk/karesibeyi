@@ -3,6 +3,7 @@ const $$ = (s) => [...document.querySelectorAll(s)];
 
 let products = [];
 let orders = [];
+let selectedProductCategory = "all";
 
 async function api(path, options = {}) {
   const response = await fetch(`/api/admin${path}`, {
@@ -71,11 +72,15 @@ function render() {
 }
 
 function renderProducts() {
+  const visibleProducts = selectedProductCategory === "all"
+    ? products
+    : products.filter(product => product.category === selectedProductCategory);
+
   $("#productsTable").innerHTML = `
     <table class="table">
       <thead><tr><th>Ürün</th><th>Kategori</th><th>Fiyat</th><th>Stok</th><th>Durum</th><th></th></tr></thead>
       <tbody>
-        ${products.map(p => `
+        ${visibleProducts.map(p => `
           <tr>
             <td>${esc(p.name)}</td>
             <td>${categoryLabel(p.category)}</td>
@@ -89,7 +94,7 @@ function renderProducts() {
               </div>
             </td>
           </tr>
-        `).join("") || `<tr><td colspan="6">Henüz ürün yok.</td></tr>`}
+        `).join("") || `<tr><td colspan="6">${selectedProductCategory === "all" ? "Henüz ürün yok." : "Bu kategoride henüz ürün yok."}</td></tr>`}
       </tbody>
     </table>`;
 }
@@ -145,7 +150,7 @@ function categoryLabel(value) {
     helvalar: "Helvalar",
     drajeler: "Drajeler",
     kolonyalar: "Kolonyalar"
-  }[value] || "Unlu Mamüller");
+  }[value] || "Kategorisiz");
 }
 
 function date(v) {
@@ -248,6 +253,10 @@ $("#newProductBtn").onclick = () => openProduct();
 $("#refreshOrdersBtn").onclick = loadAll;
 $("#closeProduct").onclick = () => $("#productDialog").close();
 $("#cancelProduct").onclick = () => $("#productDialog").close();
+$("#productCategoryFilter").onchange = event => {
+  selectedProductCategory = event.target.value;
+  renderProducts();
+};
 
 $("#productForm").addEventListener("submit", async e => {
   e.preventDefault();

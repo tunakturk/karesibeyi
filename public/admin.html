@@ -57,7 +57,22 @@
 
     <section id="products" class="section">
       <div class="panel">
-        <div class="panel-head"><h3>Ürünler</h3><button id="newProductBtn">+ Yeni ürün</button></div>
+        <div class="panel-head products-head">
+          <h3>Ürünler</h3>
+          <div class="product-tools">
+            <label class="category-filter-label" for="productCategoryFilter">Kategori</label>
+            <select id="productCategoryFilter" aria-label="Ürünleri kategoriye göre filtrele">
+              <option value="all">Tüm kategoriler</option>
+              <option value="unlu-mamuller">Unlu Mamüller</option>
+              <option value="kuruyemisler">Kuruyemişler</option>
+              <option value="kurabiyeler">Kurabiyeler</option>
+              <option value="helvalar">Helvalar</option>
+              <option value="drajeler">Drajeler</option>
+              <option value="kolonyalar">Kolonyalar</option>
+            </select>
+            <button id="newProductBtn">+ Yeni ürün</button>
+          </div>
+        </div>
         <div id="productsTable" class="table-wrap"></div>
       </div>
     </section>
