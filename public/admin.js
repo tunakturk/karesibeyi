@@ -254,6 +254,20 @@ $("#logoutBtn").onclick = async () => {
   showLogin();
 };
 
+function toggleSidebar() {
+  const sidebar = $(".sidebar");
+  const expanded = sidebar.classList.toggle("expanded");
+  $("#sidebarToggle").setAttribute("aria-expanded", String(expanded));
+}
+
+$("#sidebarToggle").onclick = toggleSidebar;
+$("#sidebarToggle").onkeydown = event => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    toggleSidebar();
+  }
+};
+
 $$(".nav-item").forEach(button => {
   button.onclick = () => {
     $$(".nav-item").forEach(x => x.classList.remove("active"));
