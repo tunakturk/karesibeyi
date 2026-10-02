@@ -191,6 +191,26 @@ $("#menuToggle").onclick = () => {
   $("#menuToggle").setAttribute("aria-expanded", String(isOpen));
   $("#menuToggle").setAttribute("aria-label", isOpen ? "Menüyü kapat" : "Menüyü aç");
 };
+
+let railResumeTimer;
+$("#productGrid").addEventListener("touchstart", event => {
+  const rail = event.target.closest(".rail-window");
+  if (!rail) return;
+  clearTimeout(railResumeTimer);
+  rail.classList.add("user-interacting");
+}, { passive: true });
+$("#productGrid").addEventListener("touchend", resumeRailAutoplay, { passive: true });
+$("#productGrid").addEventListener("touchcancel", resumeRailAutoplay, { passive: true });
+
+function resumeRailAutoplay() {
+  clearTimeout(railResumeTimer);
+  railResumeTimer = setTimeout(() => {
+    document.querySelectorAll(".rail-window.user-interacting").forEach(rail => {
+      rail.classList.remove("user-interacting");
+    });
+  }, 2500);
+}
+
 document.querySelectorAll("#siteNav a").forEach((link) => {
   link.onclick = () => {
     $("#siteNav").classList.remove("open");
