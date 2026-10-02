@@ -68,6 +68,39 @@ function renderProducts() {
   }).join("");
 }
 
+function advanceMobileProductRails() {
+  if (!window.matchMedia("(max-width: 550px)").matches) return;
+
+  document.querySelectorAll(".rail-window:not(.single-product)").forEach(rail => {
+    if (rail.classList.contains("user-interacting")) return;
+
+    const track = rail.querySelector(".rail-track");
+    const originalCards = [...track.children].filter(child => child.matches(".product-card"));
+    const duplicate = track.querySelector(".rail-duplicate");
+    const firstDuplicateCard = duplicate?.querySelector(".product-card");
+    if (originalCards.length < 2 || !firstDuplicateCard) return;
+
+    const cycleWidth = firstDuplicateCard.getBoundingClientRect().left -
+      originalCards[0].getBoundingClientRect().left;
+    if (cycleWidth > 0 && rail.scrollLeft >= cycleWidth - 2) {
+      rail.scrollLeft -= cycleWidth;
+    }
+
+    const railLeft = rail.getBoundingClientRect().left;
+    const currentPosition = rail.scrollLeft;
+    const nextCard = [...track.querySelectorAll(".product-card")].find(card =>
+      card.getBoundingClientRect().left - railLeft + currentPosition > currentPosition + 4
+    );
+    if (!nextCard) {
+      rail.scrollLeft = 0;
+      return;
+    }
+
+    const nextPosition = nextCard.getBoundingClientRect().left - railLeft + currentPosition;
+    rail.scrollTo({ left: nextPosition, behavior: "smooth" });
+  });
+}
+
 function productCard(p) {
     const canBuy = Number(p.price) > 0 && Number(p.stock) > 0;
 
@@ -210,6 +243,8 @@ function resumeRailAutoplay() {
     });
   }, 2500);
 }
+
+window.setInterval(advanceMobileProductRails, 4200);
 
 document.querySelectorAll("#siteNav a").forEach((link) => {
   link.onclick = () => {
