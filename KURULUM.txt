@@ -23,3 +23,8 @@ wrangler d1 execute karesibeyi-orders --remote --file=migrations/001_add_product
 wrangler d1 execute karesibeyi-orders --remote --file=migrations/002_rename_product_categories.sql
 wrangler d1 execute karesibeyi-orders --remote --file=migrations/003_move_product_image_paths.sql
 Bu işlemden sonra admin panelindeki ürün formunda kategori seçilebilir; seçim ana sayfaya ve katalog sayfasına uygulanır.
+
+SATIŞ VE STOK TAKİBİ:
+Özellik canlıya alınmadan önce mevcut D1 veritabanına stok takibi migration'ını bir kez uygula:
+wrangler d1 execute karesibeyi-orders --remote --file=migrations/004_order_stock_tracking.sql
+Migration eski siparişlerin stokunu değiştirmez. Stok, bir sipariş ilk kez paid/processing/shipped/completed durumuna geçirildiğinde düşer; satış kapsamı dışındaki bir duruma (ör. cancelled) alındığında geri eklenir. Ürün bazlı satış adetleri bu dört durumdaki tüm siparişlerden hesaplanır.

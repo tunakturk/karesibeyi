@@ -38,6 +38,9 @@ export default {
       if (url.pathname === "/api/admin/orders" && request.method === "GET")
         return adminOrders(request, env);
 
+      if (url.pathname === "/api/admin/inventory" && request.method === "GET")
+        return adminInventory(request, env);
+
       if (url.pathname.startsWith("/api/admin/orders/") && request.method === "PATCH") {
         const id = decodeURIComponent(url.pathname.split("/").pop());
         return updateOrder(request, env, id);
@@ -297,6 +300,13 @@ async function updateProduct(request, env, id) {
 async function deleteProduct(request, env, id) {
   if (!await authenticated(request, env)) return json({ error: "Yetkisiz." }, 401);
 
+  const orderItem = await env.DB.prepare(
+    "SELECT 1 AS found FROM order_items WHERE product_id = ? LIMIT 1"
+  ).bind(id).first();
+  if (orderItem) {
+    return json({ error: "Sipariş geçmişinde bulunan ürün silinemez. Ürünü satışa kapatabilirsiniz." }, 409);
+  }
+
   await env.DB.prepare("DELETE FROM products WHERE id = ?").bind(id).run();
   return json({ ok: true });
 }
@@ -314,6 +324,30 @@ async function adminOrders(request, env) {
   return json({ orders: rows.results || [] });
 }
 
+async function adminInventory(request, env) {
+  if (!await authenticated(request, env)) return json({ error: "Yetkisiz." }, 401);
+
+  const rows = await env.DB.prepare(`
+    SELECT p.id, p.name, p.category, p.stock,
+           COALESCE(s.sold, 0) AS sold,
+           COALESCE(s.preparing, 0) AS preparing
+    FROM products p
+    LEFT JOIN (
+      SELECT oi.product_id,
+             SUM(CASE WHEN o.status IN ('paid', 'processing', 'shipped', 'completed')
+                      THEN oi.quantity ELSE 0 END) AS sold,
+             SUM(CASE WHEN o.status = 'processing'
+                      THEN oi.quantity ELSE 0 END) AS preparing
+      FROM order_items oi
+      JOIN orders o ON o.id = oi.order_id
+      GROUP BY oi.product_id
+    ) s ON s.product_id = p.id
+    ORDER BY p.name COLLATE NOCASE
+  `).all();
+
+  return json({ products: rows.results || [] });
+}
+
 async function updateOrder(request, env, id) {
   if (!await authenticated(request, env)) return json({ error: "Yetkisiz." }, 401);
 
@@ -324,9 +358,32 @@ async function updateOrder(request, env, id) {
     return json({ error: "Geçersiz sipariş durumu." }, 400);
   }
 
-  await env.DB.prepare(`
-    UPDATE orders SET status = ? WHERE id = ?
-  `).bind(body.status, id).run();
+  const order = await env.DB.prepare(
+    "SELECT id, status FROM orders WHERE id = ?"
+  ).bind(id).first();
+  if (!order) return json({ error: "Sipariş bulunamadı." }, 404);
+  if (order.status === body.status) return json({ ok: true });
+
+  let result;
+  try {
+    result = await env.DB.prepare(`
+      UPDATE orders SET status = ? WHERE id = ? AND status = ?
+    `).bind(body.status, id, order.status).run();
+  } catch (error) {
+    if (String(error?.message || error).includes("insufficient_stock")) {
+      return json({ error: "Yeterli stok yok veya siparişteki bir ürün bulunamıyor." }, 409);
+    }
+    throw error;
+  }
+
+  if (!result.meta.changes) {
+    const current = await env.DB.prepare(
+      "SELECT status FROM orders WHERE id = ?"
+    ).bind(id).first();
+    if (current?.status !== body.status) {
+      return json({ error: "Sipariş durumu başka bir işlemde değiştirildi. Yenileyip tekrar deneyin." }, 409);
+    }
+  }
 
   return json({ ok: true });
 }

@@ -3,7 +3,11 @@ const $$ = (s) => [...document.querySelectorAll(s)];
 
 let products = [];
 let orders = [];
+let inventory = [];
 let selectedProductCategory = "unlu-mamuller";
+let selectedInventoryCategory = "unlu-mamuller";
+let expandedInventoryProductId = "";
+let selectedStockAlert = "";
 const productCategories = [
   ["unlu-mamuller", "Unlu Mamüller"],
   ["kuruyemisler", "Kuruyemişler"],
@@ -55,13 +59,15 @@ async function boot() {
 
 async function loadAll() {
   try {
-    const [productData, orderData] = await Promise.all([
+    const [productData, orderData, inventoryData] = await Promise.all([
       api("/products"),
-      api("/orders")
+      api("/orders"),
+      api("/inventory")
     ]);
 
     products = productData.products || [];
     orders = orderData.orders || [];
+    inventory = inventoryData.products || [];
 
     $("#status").textContent = "Bağlı";
     render();
@@ -76,7 +82,101 @@ function render() {
   $("#statAllOrders").textContent = orders.length;
   renderProducts();
   renderOrders();
+  renderInventory();
   renderRecent();
+}
+
+function renderInventory() {
+  const categoryProducts = inventory.filter(product => product.category === selectedInventoryCategory);
+  const lowStockProducts = inventory.filter(product => Number(product.stock) > 0 && Number(product.stock) <= 5);
+  const outOfStockProducts = inventory.filter(product => Number(product.stock) <= 0);
+  if (!categoryProducts.some(product => product.id === expandedInventoryProductId)) {
+    expandedInventoryProductId = "";
+  }
+
+  $("#inventoryCategoryTabs").innerHTML = productCategories.map(([value, label]) => `
+    <button class="category-tab ${value === selectedInventoryCategory ? "active" : ""}"
+      type="button" role="tab" aria-selected="${value === selectedInventoryCategory}" data-category="${value}">
+      ${label}
+    </button>
+  `).join("");
+  $$("#inventoryCategoryTabs .category-tab").forEach(button => {
+    button.onclick = () => {
+      selectedInventoryCategory = button.dataset.category;
+      expandedInventoryProductId = "";
+      selectedStockAlert = "";
+      renderInventory();
+    };
+  });
+
+  $("#statLowStock").textContent = lowStockProducts.length.toLocaleString("tr-TR");
+  $("#statOutOfStock").textContent = outOfStockProducts.length.toLocaleString("tr-TR");
+
+  $$(".stock-alert-option").forEach(button => {
+    const active = button.dataset.stockAlert === selectedStockAlert;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-expanded", String(active));
+    button.onclick = () => {
+      selectedStockAlert = active ? "" : button.dataset.stockAlert;
+      renderInventory();
+    };
+  });
+
+  const alertProducts = selectedStockAlert === "low" ? lowStockProducts : outOfStockProducts;
+  const alertLabel = selectedStockAlert === "low" ? "Azalan stok" : "Stokta olmayan ürünler";
+  const details = $("#stockAlertDetails");
+  if (selectedStockAlert) {
+    details.classList.remove("hidden");
+    details.innerHTML = `
+      <div class="stock-alert-details-head"><strong>${alertLabel}</strong><button type="button" class="ghost" id="closeStockAlert">Kapat</button></div>
+      <ul>${alertProducts.map(product => `<li>${esc(product.name)} <span>${categoryLabel(product.category)} · ${Number(product.stock).toLocaleString("tr-TR")} adet</span></li>`).join("") || "<li>Bu durumdaki ürün yok.</li>"}</ul>
+    `;
+    $("#closeStockAlert").onclick = () => {
+      selectedStockAlert = "";
+      renderInventory();
+    };
+  } else {
+    details.classList.add("hidden");
+    details.innerHTML = "";
+  }
+
+  $("#inventoryProducts").innerHTML = categoryProducts.map(product => {
+    const stock = Number(product.stock);
+    const sold = Number(product.sold || 0);
+    const preparing = Number(product.preparing || 0);
+    const stockStatus = stock <= 0
+      ? '<span class="pill stock-empty">Tükendi</span>'
+      : stock <= 5
+        ? '<span class="pill stock-low">Az kaldı</span>'
+        : '<span class="pill stock-available">Stokta</span>';
+    const expanded = product.id === expandedInventoryProductId;
+    return `
+      <article class="inventory-product-card ${expanded ? "expanded" : ""}">
+        <button type="button" class="inventory-product-preview" data-product-id="${esc(product.id)}" aria-expanded="${expanded}">
+          <span class="inventory-product-heading"><strong>${esc(product.name)}</strong>${stockStatus}</span>
+          <span class="inventory-product-metrics">
+            <span><small>Satılan</small><strong>${sold.toLocaleString("tr-TR")}</strong></span>
+            <span><small>Mevcut stok</small><strong>${stock.toLocaleString("tr-TR")}</strong></span>
+            <span><small>Hazırlanan</small><strong>${preparing.toLocaleString("tr-TR")}</strong></span>
+          </span>
+          <span class="inventory-product-hint">${expanded ? "Detayı gizle" : "Detayı görmek için tıkla"}</span>
+        </button>
+        ${expanded ? `
+          <div class="inventory-product-details">
+            <div><span>Satışta olan siparişlerde satılan</span><strong>${sold.toLocaleString("tr-TR")} adet</strong></div>
+            <div><span>Ürün kartındaki güncel stok</span><strong>${stock.toLocaleString("tr-TR")} adet</strong></div>
+            <div><span>Hazırlanıyor durumundaki siparişlerde</span><strong>${preparing.toLocaleString("tr-TR")} adet</strong></div>
+            <p>${stock <= 0 ? "Stokta ürün kalmamış." : stock <= 5 ? "Stok azalmış; yeni stok girişi gerekebilir." : "Stok seviyesi normal."}</p>
+          </div>
+        ` : ""}
+      </article>`;
+  }).join("") || '<div class="inventory-empty">Bu kategoride henüz ürün yok.</div>';
+  $$("#inventoryProducts .inventory-product-preview").forEach(button => {
+    button.onclick = () => {
+      expandedInventoryProductId = expandedInventoryProductId === button.dataset.productId ? "" : button.dataset.productId;
+      renderInventory();
+    };
+  });
 }
 
 function renderProducts() {
@@ -207,10 +307,14 @@ window.deleteProduct = async id => {
 };
 
 window.setOrderStatus = async (id, status) => {
-  await api(`/orders/${encodeURIComponent(id)}`, {
-    method: "PATCH",
-    body: JSON.stringify({ status })
-  });
+  try {
+    await api(`/orders/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status })
+    });
+  } catch (error) {
+    alert(error.message);
+  }
   await loadAll();
 };
 
@@ -284,6 +388,7 @@ $$("[data-go]").forEach(button => {
 
 $("#newProductBtn").onclick = () => openProduct();
 $("#refreshOrdersBtn").onclick = loadAll;
+$("#refreshInventoryBtn").onclick = loadAll;
 $("#closeProduct").onclick = () => $("#productDialog").close();
 $("#cancelProduct").onclick = () => $("#productDialog").close();
 $("#productForm").addEventListener("submit", async e => {

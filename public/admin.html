@@ -32,6 +32,7 @@
       <button class="nav-item active" data-section="dashboard">Genel Bakış</button>
       <button class="nav-item" data-section="products">Ürünler</button>
       <button class="nav-item" data-section="orders">Siparişler</button>
+      <button class="nav-item" data-section="inventory">Satış ve Stok</button>
       <button class="nav-item" data-section="settings">Ayarlar</button>
     </nav>
     <button id="logoutBtn" class="logout">Çıkış yap</button>
@@ -70,6 +71,29 @@
       <div class="panel">
         <div class="panel-head"><h3>Siparişler</h3><button class="ghost" id="refreshOrdersBtn">Yenile</button></div>
         <div id="ordersTable" class="table-wrap"></div>
+      </div>
+    </section>
+
+    <section id="inventory" class="section">
+      <div class="panel">
+        <div class="panel-head"><h3>Ürün satış ve stok durumu</h3><button class="ghost" id="refreshInventoryBtn">Yenile</button></div>
+        <aside class="card stock-alert-card">
+          <span>Stok durumu · tüm kategoriler</span>
+          <div class="stock-alert-split">
+            <button type="button" class="stock-alert-option" data-stock-alert="low" aria-expanded="false">
+              <span>Azalan stok</span><strong id="statLowStock">0</strong>
+            </button>
+            <button type="button" class="stock-alert-option" data-stock-alert="empty" aria-expanded="false">
+              <span>Stokta olmayan</span><strong id="statOutOfStock">0</strong>
+            </button>
+          </div>
+        </aside>
+        <div id="stockAlertDetails" class="stock-alert-details hidden" aria-live="polite"></div>
+        <div id="inventoryCategoryTabs" class="category-tabs" role="tablist" aria-label="Stok kategorileri"></div>
+        <div class="inventory-overview">
+          <div id="inventoryProducts" class="inventory-products"></div>
+        </div>
+        <p class="hint">Satış adedi; ödenen, hazırlanıyor, kargoda ve tamamlanan siparişlerden hesaplanır. Yeni ve iptal edilen siparişler dahil değildir. Stok, ürün düzenleme ekranından yönetilir.</p>
       </div>
     </section>
 
