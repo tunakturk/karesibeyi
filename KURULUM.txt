@@ -28,3 +28,12 @@ SATIŞ VE STOK TAKİBİ:
 Özellik canlıya alınmadan önce mevcut D1 veritabanına stok takibi migration'ını bir kez uygula:
 wrangler d1 execute karesibeyi-orders --remote --file=migrations/004_order_stock_tracking.sql
 Migration eski siparişlerin stokunu değiştirmez. Stok, bir sipariş ilk kez paid/processing/shipped/completed durumuna geçirildiğinde düşer; satış kapsamı dışındaki bir duruma (ör. cancelled) alındığında geri eklenir. Ürün bazlı satış adetleri bu dört durumdaki tüm siparişlerden hesaplanır.
+
+GITHUB'DAN OTOMATİK YAYIN:
+`.github/workflows/deploy.yml`, `main` dalına yapılan her push sonrasında site dosyalarını ve Worker'ı Cloudflare'a otomatik yayınlar. GitHub'daki `Actions` sekmesinden yayın sonucunu görebilir, `Deploy to Cloudflare` iş akışını `Run workflow` ile elle de çalıştırabilirsin.
+
+Otomatik yayını etkinleştirmek için GitHub deposunda `Settings > Secrets and variables > Actions > New repository secret` bölümünden şu iki secret'ı ekle:
+- `CLOUDFLARE_API_TOKEN`: Cloudflare'da oluşturulmuş API token. Token'a doğru hesabı seçerek `Account > Workers Scripts > Edit` ve `Account > Account Settings > Read` izinlerini ver.
+- `CLOUDFLARE_ACCOUNT_ID`: Cloudflare hesabının Account ID'si. Cloudflare dashboard'da hesabın Overview sayfasında bulunur.
+
+Bu kurulum bir kez yapıldıktan sonra yeni görseller de dahil `public/` içindeki GitHub'a gönderilmiş tüm dosyalar otomatik yayımlanır. Bir dosyanın yalnızca bilgisayarında kayıtlı olması yetmez; GitHub'a `main` dalına commit/push edilmesi gerekir. Workflow başarısız olursa `Actions` sekmesindeki log hata nedenini gösterir.

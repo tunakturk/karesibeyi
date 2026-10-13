@@ -51,20 +51,55 @@ function renderProducts() {
       (!product.category && (category.products.includes(product.id) || category.products.includes(product.slug)))
     ));
     const cards = categoryProducts.map(productCard).join("");
+    const hasPagination = categoryProducts.length > 0;
     const isScrollable = categoryProducts.length > 1;
     return `
       <section class="product-rail" aria-labelledby="category-${category.id}">
         <div class="rail-heading">
           <h3 id="category-${category.id}">${category.title}</h3>
         </div>
-        <div class="rail-window ${isScrollable ? "" : "single-product"}">
+        <div class="rail-window ${isScrollable ? "" : "single-product"} ${hasPagination ? "has-pagination" : ""}">
           ${cards
             ? `<div class="rail-track">${cards}${isScrollable ? `<div class="rail-duplicate">${cards}</div>` : ""}</div>`
             : `<div class="category-empty">Bu kategoride henüz ürün bulunmuyor.</div>`}
         </div>
+        ${hasPagination ? `
+          <div class="rail-pagination" role="group" aria-label="Ürün 1 / ${categoryProducts.length}">
+            ${categoryProducts.map((_, index) => `<span class="rail-page-dot${index === 0 ? " active" : ""}" aria-hidden="true"></span>`).join("")}
+          </div>
+        ` : ""}
       </section>
     `;
   }).join("");
+  updateRailPagination();
+}
+
+function updateRailPagination() {
+  document.querySelectorAll(".rail-window.has-pagination").forEach(rail => {
+    const originalCards = [...rail.querySelectorAll(".rail-track > .product-card")];
+    const dots = [...rail.parentElement.querySelectorAll(".rail-page-dot")];
+    if (!originalCards.length || !dots.length) return;
+
+    const railBounds = rail.getBoundingClientRect();
+    const cards = [...rail.querySelectorAll(".rail-track > .product-card, .rail-duplicate .product-card")];
+    let activeIndex = 0;
+    let largestVisibleArea = 0;
+
+    cards.forEach((card, index) => {
+      const bounds = card.getBoundingClientRect();
+      const visibleWidth = Math.max(0, Math.min(bounds.right, railBounds.right) - Math.max(bounds.left, railBounds.left));
+      if (visibleWidth > largestVisibleArea) {
+        largestVisibleArea = visibleWidth;
+        activeIndex = index % originalCards.length;
+      }
+    });
+
+    dots.forEach((dot, index) => dot.classList.toggle("active", index === activeIndex));
+    rail.parentElement.querySelector(".rail-pagination").setAttribute(
+      "aria-label",
+      `Ürün ${activeIndex + 1} / ${originalCards.length}`
+    );
+  });
 }
 
 function advanceMobileProductRails() {
@@ -233,6 +268,7 @@ $("#productGrid").addEventListener("touchstart", event => {
 }, { passive: true });
 $("#productGrid").addEventListener("touchend", resumeRailAutoplay, { passive: true });
 $("#productGrid").addEventListener("touchcancel", resumeRailAutoplay, { passive: true });
+$("#productGrid").addEventListener("scroll", updateRailPagination, { passive: true, capture: true });
 
 function resumeRailAutoplay() {
   clearTimeout(railResumeTimer);
@@ -244,6 +280,7 @@ function resumeRailAutoplay() {
 }
 
 window.setInterval(advanceMobileProductRails, 4200);
+window.setInterval(updateRailPagination, 150);
 
 document.querySelectorAll("#siteNav a").forEach((link) => {
   link.onclick = () => {
