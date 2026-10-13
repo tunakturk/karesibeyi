@@ -56,7 +56,6 @@ function renderProducts() {
       <section class="product-rail" aria-labelledby="category-${category.id}">
         <div class="rail-heading">
           <h3 id="category-${category.id}">${category.title}</h3>
-          <span>Özenle seçildi</span>
         </div>
         <div class="rail-window ${isScrollable ? "" : "single-product"}">
           ${cards
