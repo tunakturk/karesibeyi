@@ -6,7 +6,7 @@
 <meta name="description" content="Karesi Beyi ürünleri. Kuruyemiş, unlu mamuller, kahve, helva, kolonya ve daha fazlası.">
 <title>Karesi Beyi | Sofranızda Güven, Markamızda Kalite</title>
 <link rel="icon" type="image/png" href="assets/KB.png">
-<link rel="stylesheet" href="style.css?v=map-link-black-20261013">
+<link rel="stylesheet" href="style.css?v=homepage-slogan-20261030b">
 </head>
 <body>
 <header class="site-header">
@@ -31,13 +31,45 @@
   <div class="container hero-grid">
     <div>
       <span class="eyebrow">Karesi Beyi</span>
-      <h1>Sofranızda güven,<br><strong>markamızda kalite.</strong></h1>
+      <h1 class="hero-slogan" aria-label="Sofranızda güven, markamızda kalite.">
+        Sofranızda
+        <span class="hero-slogan-reel" aria-hidden="true">
+          <span class="hero-slogan-track">
+            <span>Güven,</span>
+            <span>Erişte,</span>
+            <span>Mantı,</span>
+            <span>Tarhana,</span>
+            <span>Kurabiye,</span>
+            <span>Kuruyemiş,</span>
+            <span>Türk Kahvesi,</span>
+            <span>Helva,</span>
+            <span>Güven,</span>
+          </span>
+        </span><br>
+        <strong>markamızda kalite.</strong>
+      </h1>
       <p>Kuruyemişten unlu mamullere, kahveden kolonyaya uzanan Karesi Beyi ürünlerini keşfedin.</p>
       <a class="btn primary" href="#urunler">Ürünleri Keşfet</a>
     </div>
-    <img class="hero-img" src="assets/kuruyemisler/turk-kahvesi-hero.png" alt="Geleneksel Türk kahvesi yanında Karesi Beyi Türk kahvesi paketi">
+    <div class="hero-visual">
+      <div class="hero-seal" aria-hidden="true">
+        <svg viewBox="0 0 400 400" focusable="false">
+          <defs>
+            <path id="hero-seal-copy" d="M200,200 m-165,0 a165,165 0 1,1 330,0 a165,165 0 1,1 -330,0"/>
+          </defs>
+          <g class="ring">
+            <text><textPath href="#hero-seal-copy">SOFRANIZDA GÜVEN • MARKAMIZDA KALİTE • KARESİ BEYİ • </textPath></text>
+          </g>
+        </svg>
+      </div>
+      <img class="hero-img" src="assets/kuruyemisler/turk-kahvesi-hero.png" alt="Geleneksel Türk kahvesi yanında Karesi Beyi Türk kahvesi paketi">
+    </div>
   </div>
 </section>
+
+<div class="category-marquee" aria-hidden="true">
+  <div class="category-marquee-track" id="categoryMarquee"></div>
+</div>
 
 <section class="section" id="urunler">
   <div class="container">
@@ -124,6 +156,6 @@
 </div>
 
 <footer><div class="container">© <span id="year"></span> Karesi Beyi</div></footer>
-<script src="script.js?v=mobile-product-card-design-20261002"></script>
+<script src="script.js?v=homepage-slogan-20261030b"></script>
 </body>
 </html>

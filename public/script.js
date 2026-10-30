@@ -27,6 +27,7 @@ async function loadProducts() {
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Ürünler yüklenemedi.");
   products = data.products || [];
+  renderCategoryMarquee();
 
   cart = cart.filter(row => {
     const p = products.find(x => x.id === row.id);
@@ -46,10 +47,7 @@ function renderProducts() {
   }
 
   el.innerHTML = productCategories.map((category) => {
-    const categoryProducts = shuffle(products.filter((product) =>
-      product.category === category.id ||
-      (!product.category && (category.products.includes(product.id) || category.products.includes(product.slug)))
-    ));
+    const categoryProducts = shuffle(getCategoryProducts(category));
     const cards = categoryProducts.map(productCard).join("");
     const hasPagination = categoryProducts.length > 0;
     const isScrollable = categoryProducts.length > 1;
@@ -57,10 +55,14 @@ function renderProducts() {
       <section class="product-rail" aria-labelledby="category-${category.id}">
         <div class="rail-heading">
           <h3 id="category-${category.id}">${category.title}</h3>
+          <div class="rail-controls">
+            <button type="button" data-rail-direction="-1" aria-label="Önceki ${category.title} ürünü" ${isScrollable ? "" : "disabled"}>‹</button>
+            <button type="button" data-rail-direction="1" aria-label="Sonraki ${category.title} ürünü" ${isScrollable ? "" : "disabled"}>›</button>
+          </div>
         </div>
-        <div class="rail-window ${isScrollable ? "" : "single-product"} ${hasPagination ? "has-pagination" : ""}">
+        <div class="rail-window ${isScrollable ? "" : "single-product"} ${hasPagination ? "has-pagination" : ""}" role="region" aria-label="${category.title} ürünleri" tabindex="0">
           ${cards
-            ? `<div class="rail-track">${cards}${isScrollable ? `<div class="rail-duplicate">${cards}</div>` : ""}</div>`
+            ? `<div class="rail-track">${cards}</div>`
             : `<div class="category-empty">Bu kategoride henüz ürün bulunmuyor.</div>`}
         </div>
         ${hasPagination ? `
@@ -74,6 +76,26 @@ function renderProducts() {
   updateRailPagination();
 }
 
+function getCategoryProducts(category) {
+  return products.filter((product) =>
+    product.category === category.id ||
+    (!product.category && (category.products.includes(product.id) || category.products.includes(product.slug)))
+  );
+}
+
+function renderCategoryMarquee() {
+  const categories = productCategories.filter(category => getCategoryProducts(category).length > 0);
+  const marquee = $("#categoryMarquee");
+  if (!categories.length || !marquee) return;
+
+  const marqueeItems = categories.concat(categories).map(category => {
+    const item = document.createElement("span");
+    item.textContent = category.title;
+    return item;
+  });
+  marquee.replaceChildren(...marqueeItems);
+}
+
 function updateRailPagination() {
   document.querySelectorAll(".rail-window.has-pagination").forEach(rail => {
     const originalCards = [...rail.querySelectorAll(".rail-track > .product-card")];
@@ -81,18 +103,7 @@ function updateRailPagination() {
     if (!originalCards.length || !dots.length) return;
 
     const railBounds = rail.getBoundingClientRect();
-    const cards = [...rail.querySelectorAll(".rail-track > .product-card, .rail-duplicate .product-card")];
-    let activeIndex = 0;
-    let largestVisibleArea = 0;
-
-    cards.forEach((card, index) => {
-      const bounds = card.getBoundingClientRect();
-      const visibleWidth = Math.max(0, Math.min(bounds.right, railBounds.right) - Math.max(bounds.left, railBounds.left));
-      if (visibleWidth > largestVisibleArea) {
-        largestVisibleArea = visibleWidth;
-        activeIndex = index % originalCards.length;
-      }
-    });
+    const activeIndex = getVisibleCardIndex(rail, originalCards, railBounds);
 
     dots.forEach((dot, index) => dot.classList.toggle("active", index === activeIndex));
     rail.parentElement.querySelector(".rail-pagination").setAttribute(
@@ -102,36 +113,38 @@ function updateRailPagination() {
   });
 }
 
+function getVisibleCardIndex(rail, cards, railBounds = rail.getBoundingClientRect()) {
+  let activeIndex = 0;
+  let largestVisibleArea = 0;
+  cards.forEach((card, index) => {
+    const bounds = card.getBoundingClientRect();
+    const visibleWidth = Math.max(0, Math.min(bounds.right, railBounds.right) - Math.max(bounds.left, railBounds.left));
+    if (visibleWidth > largestVisibleArea) {
+      largestVisibleArea = visibleWidth;
+      activeIndex = index;
+    }
+  });
+  return activeIndex;
+}
+
+function scrollProductRail(rail, direction) {
+  const cards = [...rail.querySelectorAll(".rail-track > .product-card")];
+  if (cards.length < 2) return;
+
+  const activeIndex = getVisibleCardIndex(rail, cards);
+  const targetIndex = (activeIndex + direction + cards.length) % cards.length;
+  const railBounds = rail.getBoundingClientRect();
+  const targetLeft = rail.scrollLeft + cards[targetIndex].getBoundingClientRect().left - railBounds.left;
+  rail.scrollTo({ left: targetLeft, behavior: "smooth" });
+}
+
 function advanceMobileProductRails() {
   if (!window.matchMedia("(max-width: 550px)").matches) return;
 
   document.querySelectorAll(".rail-window:not(.single-product)").forEach(rail => {
     if (rail.classList.contains("user-interacting")) return;
 
-    const track = rail.querySelector(".rail-track");
-    const originalCards = [...track.children].filter(child => child.matches(".product-card"));
-    const duplicate = track.querySelector(".rail-duplicate");
-    const firstDuplicateCard = duplicate?.querySelector(".product-card");
-    if (originalCards.length < 2 || !firstDuplicateCard) return;
-
-    const cycleWidth = firstDuplicateCard.getBoundingClientRect().left -
-      originalCards[0].getBoundingClientRect().left;
-    if (cycleWidth > 0 && rail.scrollLeft >= cycleWidth - 2) {
-      rail.scrollLeft -= cycleWidth;
-    }
-
-    const railLeft = rail.getBoundingClientRect().left;
-    const currentPosition = rail.scrollLeft;
-    const nextCard = [...track.querySelectorAll(".product-card")].find(card =>
-      card.getBoundingClientRect().left - railLeft + currentPosition > currentPosition + 4
-    );
-    if (!nextCard) {
-      rail.scrollLeft = 0;
-      return;
-    }
-
-    const nextPosition = nextCard.getBoundingClientRect().left - railLeft + currentPosition;
-    rail.scrollTo({ left: nextPosition, behavior: "smooth" });
+    scrollProductRail(rail, 1);
   });
 }
 
@@ -269,6 +282,12 @@ $("#productGrid").addEventListener("touchstart", event => {
 $("#productGrid").addEventListener("touchend", resumeRailAutoplay, { passive: true });
 $("#productGrid").addEventListener("touchcancel", resumeRailAutoplay, { passive: true });
 $("#productGrid").addEventListener("scroll", updateRailPagination, { passive: true, capture: true });
+$("#productGrid").addEventListener("click", event => {
+  const button = event.target.closest("[data-rail-direction]");
+  if (!button) return;
+  const rail = button.closest(".product-rail")?.querySelector(".rail-window");
+  if (rail) scrollProductRail(rail, Number(button.dataset.railDirection));
+});
 
 function resumeRailAutoplay() {
   clearTimeout(railResumeTimer);
