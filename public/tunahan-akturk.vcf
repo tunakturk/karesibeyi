@@ -1,0 +1,13 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Aktürk;Tunahan;;;
+FN:Tunahan Aktürk
+ORG:AK Gıda Satış ve Pazarlama
+TEL;TYPE=CELL,VOICE:+905432802110
+TEL;TYPE=WORK,VOICE:+905402802110
+ADR;TYPE=WORK:;;Maltepe Mh. Bağlar Sk. No:286/A;Karesi;Balıkesir;;Türkiye
+EMAIL;TYPE=INTERNET,WORK:bilgi@karesibeyi.com
+URL:https://www.karesibeyi.com
+X-SOCIALPROFILE;TYPE=instagram:https://www.instagram.com/karesibeyi_/
+NOTE:WhatsApp Sipariş Hattı: +90 540 280 21 10 · Instagram: @karesibeyi_
+END:VCARD

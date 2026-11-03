@@ -58,6 +58,9 @@ export default {
       if (url.pathname === "/products" || url.pathname === "/products/" || url.pathname === "/urunler" || url.pathname === "/urunler/")
         return env.ASSETS.fetch(new Request(new URL("/products.html", request.url), request));
 
+      if (url.pathname === "/qr1kartvizit" || url.pathname === "/qr1kartvizit/")
+        return env.ASSETS.fetch(new Request(new URL("/qr1kartvizit.html", request.url), request));
+
       return env.ASSETS.fetch(request);
     } catch (error) {
       console.error(error);
